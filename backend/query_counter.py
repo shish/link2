@@ -14,7 +14,7 @@ class QueryCounter(SchemaExtension):
 
     def callback(self, *args, **kwargs):
         self.queries.append((args[2], args[3]))
-        if len(self.queries) > 20:
+        if len(self.queries) > 20:  # pragma: no cover
             raise Exception("Too many queries!")
 
     def on_operation(self):

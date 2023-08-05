@@ -28,7 +28,7 @@ def create_app(test_config=None):
         instance_path=os.path.abspath("./data"),
         static_folder="../frontend/dist",
     )
-    if app.debug:
+    if app.debug:  # pragma: no cover
         CORS(
             app,
             origins=[

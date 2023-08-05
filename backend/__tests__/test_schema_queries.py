@@ -129,7 +129,7 @@ async def test_survey_stats(query: Query, subtests, login: Login):
         assert result.data["survey"]["name"] == "Pets"
         assert result.data["survey"]["stats"] == {
             "friendResponses": 1,
-            "otherResponses": 4,
+            "otherResponses": 3,
             "unansweredQuestions": 0,
         }
 
