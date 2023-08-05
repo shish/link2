@@ -1,5 +1,5 @@
 #!/bin/sh
-python3 link2/models.py
+python3 backend/models.py
 sqlite3 data/link2.sqlite <<EOF
 ATTACH DATABASE 'data/link1.sqlite' AS old;
 
