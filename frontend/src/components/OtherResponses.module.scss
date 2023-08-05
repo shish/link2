@@ -1,0 +1,20 @@
+.others {
+    grid-area: others;
+
+    UL {
+        padding-left: 1.5em;
+    }
+    @media (max-width: 799px) {
+        LI {
+            display: inline;
+        }
+        LI::before {
+            content: " // ";
+        }
+        LI:first-child::before {
+            content: "";
+        }
+    }
+    @media (min-width: 800px) {
+    }
+}

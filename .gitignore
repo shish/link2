@@ -1,0 +1,9 @@
+*.sdb
+data/
+venv/
+__pycache__
+.venv
+.DS_Store
+.coverage
+.idea
+.vscode

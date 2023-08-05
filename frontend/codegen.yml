@@ -1,0 +1,6 @@
+schema: 'http://127.0.0.1:8000/graphql'
+documents:
+  - 'src/**/*.tsx'
+generates:
+  src/gql/:
+    preset: client

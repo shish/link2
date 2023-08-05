@@ -1,0 +1,8 @@
+.github
+.mypy_cache
+.pytest_cache
+.git
+.coverage
+venv
+frontend/node_modules
+data

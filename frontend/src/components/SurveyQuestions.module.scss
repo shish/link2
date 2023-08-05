@@ -1,0 +1,71 @@
+.www {
+    white-space: nowrap;
+    text-align: right;
+
+    INPUT {
+        vertical-align: middle;
+        margin-top: -6px;
+    }
+
+    LABEL {
+        padding: 0px 4px;
+        border-radius: 4px;
+    }
+
+    color: black;
+
+    .want {
+        background: #DFD;
+    }
+
+    .will {
+        background: #FFD;
+    }
+
+    .wont {
+        background: #FDD;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        color: white;
+
+        .want {
+            background: #090;
+        }
+
+        .will {
+            background: #990;
+        }
+
+        .wont {
+            background: #900;
+        }
+    }
+}
+
+.buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    button:first-child {
+        flex: 0 0 25%;
+    }
+
+    button {
+        flex: 1 1 50%;
+    }
+
+    button:last-child {
+        flex: 0 0 25%;
+    }
+
+    // disabled buttons in default colour, active buttons in blue
+    //button:disabled {
+    //    background-color: #e0e0e0;
+    //}
+    button:enabled {
+        background-color: var(--link-color);
+        color: white;
+    }
+}

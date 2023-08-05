@@ -1,0 +1,29 @@
+.page {
+    ARTICLE {
+        TD:last-child {
+            width: 7em;
+        }
+        @media (max-width: 799px) {
+            display: grid;
+            grid-template-columns: 1fr;
+        }
+        @media (min-width: 800px) {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: min-content 1fr;
+            grid-template-areas:
+                "incoming confirmed"
+                "outgoing confirmed";
+    
+            .incoming {
+                grid-area: incoming;
+            }
+            .outgoing {
+                grid-area: outgoing;
+            }
+            .confirmed {
+                grid-area: confirmed;
+            }
+        }
+    }
+}

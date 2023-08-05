@@ -1,0 +1,24 @@
+.page {
+    @media (max-width: 799px) {
+    }
+    @media (min-width: 800px) {
+        ARTICLE {
+            display: grid;
+            grid-template-columns: 20em 1fr;
+            grid-template-rows: min-content 1fr;
+            grid-template-areas:
+                "login lists"
+                "about about";
+
+            .login {
+                grid-area: lists;
+            }
+            .about {
+                grid-area: about;
+            }
+            .lists {
+                grid-area: lists;
+            }
+        }
+    }
+}

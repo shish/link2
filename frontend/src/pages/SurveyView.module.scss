@@ -1,0 +1,17 @@
+.page {
+    SELECT {
+        width: 100%;
+    }
+    @media (max-width: 799px) {
+    }
+    @media (min-width: 800px) {
+        ARTICLE {
+            display: grid;
+            grid-template-columns: 1fr 1fr 15em;
+            grid-template-rows: min-content 1fr;
+            grid-template-areas:
+                "description privacy others"
+                "questions questions others";
+        }
+    }
+}

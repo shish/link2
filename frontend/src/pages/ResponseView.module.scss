@@ -1,0 +1,21 @@
+.page {
+    @media (max-width: 799px) {
+    }
+    @media (min-width: 800px) {
+        ARTICLE {
+            display: grid;
+            grid-template-columns: 1fr 15em;
+            grid-template-rows: min-content 1fr;
+            grid-template-areas:
+                "intro others"
+                "answers others";
+
+                .intro {
+                    grid-area: intro;
+                }
+                .answers {
+                    grid-area: answers;
+                }
+                }
+    }
+}

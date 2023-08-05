@@ -1,0 +1,40 @@
+{
+  "name": "link",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite --host 127.0.0.1",
+    "build": "vite build",
+    "test": "vitest",
+    "preview": "vite preview",
+    "format": "prettier --write 'src/**/*.ts{,x}' --tab-width 4 --trailing-comma all",
+    "codegen": "graphql-codegen --watch",
+    "cypress": "npx cypress open",
+    "cypress-coverage": "rm -rf coverage .nyc_output ; npx cypress run ; npx nyc report --check-coverage --lines 80",
+    "dev": "concurrently npm:start npm:test npm:codegen"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.7.10",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.9.0",
+    "react-tooltip": "^5.18.1",
+    "usehooks-ts": "^2.9.1"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^4.0.1",
+    "@graphql-codegen/client-preset": "^4.0.1",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react-swc": "^3.0.0",
+    "concurrently": "^7.6.0",
+    "cypress": "^12.8.1",
+    "prettier": "^2.8.7",
+    "sass": "^1.60.0",
+    "typescript": "^4.9.3",
+    "vite": "^4.1.0",
+    "vite-plugin-svgr": "^2.4.0",
+    "vitest": "^0.29.7"
+  }
+}
