@@ -1,11 +1,11 @@
 import React from "react";
-import { SurveyWithResponseFragment } from "../gql/graphql";
+import { SurveyViewFragment } from "../gql/graphql";
 
 
 export function SurveyDescription({
     survey,
 }: {
-    survey: SurveyWithResponseFragment;
+    survey: SurveyViewFragment;
 }): React.ReactElement {
     return (
         <section style={{gridArea: "description"}}>

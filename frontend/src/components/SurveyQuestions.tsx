@@ -4,7 +4,7 @@ import { graphql, useFragment as fragCast } from "../gql";
 import css from "./SurveyQuestions.module.scss";
 import {
     Question,
-    SurveyWithResponseFragment,
+    SurveyViewFragment,
     Www,
 } from "../gql/graphql";
 import { Tip } from "./Tip";
@@ -18,12 +18,10 @@ const ANSWER_FRAGMENT = graphql(`
     }
 `);
 
-type AnswerPair = { value: Www; flip: Www };
-
 export function SurveyQuestions({
     survey,
 }: {
-    survey: SurveyWithResponseFragment;
+    survey: SurveyViewFragment;
 }): React.ReactElement {
     const sections = Array.from(
         new Set(survey.questions.map((q) => q.section)),

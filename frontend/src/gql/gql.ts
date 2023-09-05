@@ -13,6 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n    mutation addQuestion($surveyId: Int!, $question: QuestionInput!) {\n        addQuestion(surveyId: $surveyId, question: $question) {\n            section\n            text\n            flip\n        }\n    }\n": types.AddQuestionDocument,
     "\n    query getOtherResponses($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            responses {\n                id\n                owner {\n                    username\n                    isFriend\n                }\n            }\n        }\n    }\n": types.GetOtherResponsesDocument,
     "\n    mutation updateUser(\n        $password: String!\n        $username: String!\n        $password1: String!\n        $password2: String!\n        $email: String!\n    ) {\n        updateUser(\n            password: $password\n            username: $username\n            password1: $password1\n            password2: $password2\n            email: $email\n        ) {\n            ...UserLogin\n        }\n    }\n": types.UpdateUserDocument,
     "\n    query getSurveys {\n        surveys {\n            id\n            name\n            description\n            stats {\n                unansweredQuestions\n                friendResponses\n                otherResponses\n            }\n        }\n    }\n": types.GetSurveysDocument,
@@ -25,8 +26,9 @@ const documents = {
     "\n    fragment ResponseWithComparison on Response {\n        id\n        owner {\n            username\n        }\n        survey {\n            id\n            name\n            longDescription\n        }\n        comparison {\n            section\n            order\n            text\n            flip\n            mine\n            theirs\n        }\n    }\n": types.ResponseWithComparisonFragmentDoc,
     "\n    query getResponse($responseId: Int!) {\n        response(responseId: $responseId) {\n            ...ResponseWithComparison\n        }\n    }\n": types.GetResponseDocument,
     "\n    fragment ResponseWithAnswers on Response {\n        id\n        privacy\n        answers {\n            ...MyAnswer\n        }\n    }\n": types.ResponseWithAnswersFragmentDoc,
-    "\n    fragment SurveyWithResponse on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n": types.SurveyWithResponseFragmentDoc,
-    "\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyWithResponse\n        }\n    }\n": types.GetSurveyDocument,
+    "\n    fragment SurveyView on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n    }\n": types.SurveyViewFragmentDoc,
+    "\n    fragment SurveyResponse on Survey {\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n": types.SurveyResponseFragmentDoc,
+    "\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyView\n            ...SurveyResponse\n        }\n    }\n": types.GetSurveyDocument,
     "\n    fragment UserLogin on User {\n        username\n        email\n    }\n": types.UserLoginFragmentDoc,
     "\n    query getMe {\n        me: user {\n            ...UserLogin\n        }\n    }\n": types.GetMeDocument,
     "\n    mutation createUser(\n        $username: String!\n        $password1: String!\n        $password2: String!\n        $email: String!\n    ) {\n        createUser(\n            username: $username\n            password1: $password1\n            password2: $password2\n            email: $email\n        ) {\n            ...UserLogin\n        }\n    }\n": types.CreateUserDocument,
@@ -48,6 +50,10 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    mutation addQuestion($surveyId: Int!, $question: QuestionInput!) {\n        addQuestion(surveyId: $surveyId, question: $question) {\n            section\n            text\n            flip\n        }\n    }\n"): (typeof documents)["\n    mutation addQuestion($surveyId: Int!, $question: QuestionInput!) {\n        addQuestion(surveyId: $surveyId, question: $question) {\n            section\n            text\n            flip\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -99,11 +105,15 @@ export function graphql(source: "\n    fragment ResponseWithAnswers on Response 
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    fragment SurveyWithResponse on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n"): (typeof documents)["\n    fragment SurveyWithResponse on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n"];
+export function graphql(source: "\n    fragment SurveyView on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n    }\n"): (typeof documents)["\n    fragment SurveyView on Survey {\n        id\n        name\n        description\n        longDescription\n        owner {\n            username\n        }\n        questions {\n            id\n            section\n            order\n            text\n            flip\n            extra\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyWithResponse\n        }\n    }\n"): (typeof documents)["\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyWithResponse\n        }\n    }\n"];
+export function graphql(source: "\n    fragment SurveyResponse on Survey {\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n"): (typeof documents)["\n    fragment SurveyResponse on Survey {\n        myResponse {\n            ...ResponseWithAnswers\n        }\n    }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyView\n            ...SurveyResponse\n        }\n    }\n"): (typeof documents)["\n    query getSurvey($surveyId: Int!) {\n        survey(surveyId: $surveyId) {\n            ...SurveyView\n            ...SurveyResponse\n        }\n    }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

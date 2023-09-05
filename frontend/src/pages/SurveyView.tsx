@@ -11,6 +11,7 @@ import { UserContext } from "../providers/LoginProvider";
 import { SurveyQuestions } from "../components/SurveyQuestions";
 import { SurveyDescription } from "../components/SurveyDescription";
 import { SurveyPrivacy } from "../components/SurveyPrivacy";
+import { AddQuestion } from "../components/AddQuestion";
 
 const RESPONSE_WITH_ANSWERS = graphql(`
     fragment ResponseWithAnswers on Response {
@@ -22,8 +23,8 @@ const RESPONSE_WITH_ANSWERS = graphql(`
     }
 `);
 
-const SURVEY_WITH_RESPONSE = graphql(`
-    fragment SurveyWithResponse on Survey {
+const SURVEY_VIEW_FRAGMENT = graphql(`
+    fragment SurveyView on Survey {
         id
         name
         description
@@ -39,6 +40,10 @@ const SURVEY_WITH_RESPONSE = graphql(`
             flip
             extra
         }
+    }
+`);
+const SURVEY_RESPONSE_FRAGMENT = graphql(`
+    fragment SurveyResponse on Survey {
         myResponse {
             ...ResponseWithAnswers
         }
@@ -48,7 +53,8 @@ const SURVEY_WITH_RESPONSE = graphql(`
 export const GET_SURVEY = graphql(`
     query getSurvey($surveyId: Int!) {
         survey(surveyId: $surveyId) {
-            ...SurveyWithResponse
+            ...SurveyView
+            ...SurveyResponse
         }
     }
 `);
@@ -73,7 +79,7 @@ export function SurveyView() {
     if (q.error) {
         return <ErrorPage error={q.error} />;
     }
-    const survey = fragCast(SURVEY_WITH_RESPONSE, q.data?.survey);
+    const survey = fragCast(SURVEY_VIEW_FRAGMENT, q.data?.survey);
     if (!survey) {
         return (
             <ErrorPage
@@ -84,13 +90,14 @@ export function SurveyView() {
 
     ///////////////////////////////////////////////////////////////////
     // Render
-    const myResponse = fragCast(RESPONSE_WITH_ANSWERS, survey.myResponse);
+    const myResponse = fragCast(RESPONSE_WITH_ANSWERS, fragCast(SURVEY_RESPONSE_FRAGMENT, q.data?.survey)?.myResponse);
 
     return (
         <Page title={survey.name} className={css.page}>
             <SurveyDescription survey={survey} />
             <SurveyPrivacy survey={survey} response={myResponse} />
-            {myResponse && <SurveyQuestions survey={survey} response={myResponse} />}
+            {myResponse && <SurveyQuestions survey={survey} />}
+            {myResponse && <AddQuestion survey={survey} />}
             {myResponse && <OtherResponses survey_id={survey.id} />}
         </Page>
     );
