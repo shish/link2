@@ -1,5 +1,9 @@
-name: Docker Push
-on: [push]
+name: Publish
+
+on:
+  push:
+    branches: main
+
 jobs:
   build:
     runs-on: ubuntu-latest
