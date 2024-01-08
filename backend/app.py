@@ -22,6 +22,8 @@ def create_app(test_config=None):
     ###################################################################
     # Load config
 
+    os.makedirs("./data", exist_ok=True)
+
     app = Flask(
         __name__,
         instance_path=os.path.abspath("./data"),
@@ -36,6 +38,9 @@ def create_app(test_config=None):
     if test_config is None:  # pragma: no cover
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile("config.py", silent=True)
+        if not os.path.exists("./data/secret.txt"):
+            with open("./data/secret.txt", "wb") as fp:
+                fp.write(os.urandom(32))
         with open("./data/secret.txt", "rb") as fp:
             secret_key = fp.read()
         app.config.from_mapping(
