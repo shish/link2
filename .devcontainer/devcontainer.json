@@ -30,11 +30,7 @@
 				"ms-azuretools.vscode-docker",
 				"ms-python.python",
 				"ms-python.vscode-pylance"
-			],
-			"settings": {
-				// only 5173 is needed, specified above
-				"remote.autoForwardPorts": false,
-			}
+			]
 		}
 	}
 
