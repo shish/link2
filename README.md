@@ -8,6 +8,8 @@ Open in visual studio code and accept the prompt to use a devcontainer, or use g
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/shish/link2)
 
+Once the IDE is open, `cd frontend && npm run all` to start backend and frontend at once
+
 
 Slowstart
 =========

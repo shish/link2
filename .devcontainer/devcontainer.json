@@ -14,7 +14,6 @@
 	"forwardPorts": [5173],
 
 	"updateContentCommand": "python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -r backend/requirements.txt && cd frontend && npm install",
-	"postCreateCommand": "./.devcontainer/run.sh",
 	"containerEnv": {
 		"NPM_CONFIG_PREFIX": "/tmp/node_modules",
 	},
