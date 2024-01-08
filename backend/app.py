@@ -2,7 +2,6 @@ from flask import Flask, Request, Response, g, session, jsonify
 from strawberry.flask.views import AsyncGraphQLView
 from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ignore
 import os
-from flask_cors import CORS
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
@@ -28,15 +27,6 @@ def create_app(test_config=None):
         instance_path=os.path.abspath("./data"),
         static_folder="../frontend/dist",
     )
-    if app.debug:  # pragma: no cover
-        CORS(
-            app,
-            origins=[
-                "http://localhost:5173",
-                "http://127.0.0.1:5173",
-            ],
-            supports_credentials=True,
-        )
     app.config.from_mapping(
         DATABASE_URL="sqlite:///data/link2.sqlite",
         DATABASE_ECHO=False,
