@@ -264,3 +264,4 @@ if __name__ == "__main__":  # pragma: no cover
     engine = create_engine("sqlite:///data/link2.sqlite", echo=False)
     Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
+    populate_example_data(Session(engine))
