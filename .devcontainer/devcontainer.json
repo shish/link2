@@ -13,10 +13,7 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [5173],
 
-	"updateContentCommand": "python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -r backend/requirements.txt && cd frontend && npm install",
-	"containerEnv": {
-		"NPM_CONFIG_PREFIX": "/tmp/node_modules",
-	},
+	"updateContentCommand": "python3 -m venv venv && venv/bin/pip install -r backend/requirements.txt && venv/bin/python3 -m backend.models && cd frontend && npm install",
 	"customizations": {
 		"vscode": {
 			"extensions": [

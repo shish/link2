@@ -12,7 +12,7 @@
     "codegen": "graphql-codegen --watch",
     "cypress": "npx cypress open",
     "cypress-coverage": "rm -rf coverage .nyc_output ; npx cypress run ; npx nyc report --check-coverage --lines 80",
-    "backend": "cd ../ && /tmp/venv/bin/flask --app backend.app run --port 8000 --debug",
+    "backend": "cd ../ && venv/bin/flask --app backend.app run --port 8000 --debug",
     "dev": "concurrently npm:start npm:test npm:codegen",
     "all": "concurrently npm:backend npm:start npm:test npm:codegen"
   },
