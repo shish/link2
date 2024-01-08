@@ -10,8 +10,15 @@
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
 
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [5173],
+	"portsAttributes": {
+		"5173": {
+			"label": "Application",
+			"onAutoForward": "openPreview"
+		}
+	},
+	"otherPortsAttributes": {
+		"onAutoForward": "silent"
+	},
 
 	"updateContentCommand": {
 		"backend": "python3 -m venv venv && venv/bin/pip install -r backend/requirements.txt && venv/bin/python3 -m backend.models",
