@@ -13,7 +13,7 @@ import { LoginProvider } from "./providers/LoginProvider";
 
 const createApolloClient = () => {
     const debugHttpLink = new HttpLink({
-        uri: "http://127.0.0.1:8000/graphql",
+        uri: "/graphql",
         credentials: "include",
         fetch: (uri: string, options: any) => {
             const { operationName } = JSON.parse(options.body);
