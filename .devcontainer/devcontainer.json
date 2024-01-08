@@ -1,0 +1,33 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"name": "Link2",
+	"build": {
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [8000],
+
+	"updateContentCommand": "python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -r backend/requirements.txt && cd frontend && npm install",
+	//"postCreateCommand": "./.devcontainer/run.sh",
+	"containerEnv": {
+		"NPM_CONFIG_PREFIX": "/tmp/node_modules",
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-azuretools.vscode-docker"
+			],
+			"settings": {
+			}
+		}
+	}
+
+	// Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "devcontainer"
+}
