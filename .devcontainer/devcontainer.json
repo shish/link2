@@ -11,7 +11,7 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [8000],
+	"forwardPorts": [5173],
 
 	"updateContentCommand": "python3 -m venv /tmp/venv && /tmp/venv/bin/pip install -r backend/requirements.txt && cd frontend && npm install",
 	//"postCreateCommand": "./.devcontainer/run.sh",
