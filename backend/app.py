@@ -22,8 +22,6 @@ def create_app(test_config=None):
     ###################################################################
     # Load config
 
-    os.makedirs("./data", exist_ok=True)
-
     app = Flask(
         __name__,
         instance_path=os.path.abspath("./data"),
