@@ -13,12 +13,16 @@
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [5173],
 
-	"updateContentCommand": "python3 -m venv venv && venv/bin/pip install -r backend/requirements.txt && venv/bin/python3 -m backend.models && cd frontend && npm install",
+	"updateContentCommand": {
+		"backend": "python3 -m venv venv && venv/bin/pip install -r backend/requirements.txt && venv/bin/python3 -m backend.models",
+		"frontend": "cd frontend && npm install",
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
 				"ms-azuretools.vscode-docker",
-				"ms-python.python"
+				"ms-python.python",
+				"ms-python.vscode-pylance"
 			],
 			"settings": {
 				// only 5173 is needed, specified above
