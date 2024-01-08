@@ -1,4 +1,18 @@
+Interest Link 2
+===============
+
+
+Quickstart:
+===========
+Open in visual studio code and accept the prompt to use a devcontainer, or use github's online IDE:
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/shish/link2)
+
+
+Slowstart
+=========
 Build frontend:
+---------------
 ```
 cd frontend
 npm install
@@ -7,6 +21,7 @@ npm run build  # for prod
 ```
 
 Backend:
+--------
 ```
 python3 -m venv venv
 ./venv/bin/pip install -r backend/requirements.txt
@@ -15,6 +30,7 @@ python3 -m venv venv
 ```
 
 Migrating from v1:
+------------------
 ```
 cp /websites/link1/data/link1.sqlite ./data/link1.sqlite
 ./migrate.sh
