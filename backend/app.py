@@ -4,6 +4,7 @@ from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ign
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+import datetime
 
 from . import schema as s
 
@@ -32,6 +33,7 @@ def create_app(test_config=None):
         DATABASE_ECHO=False,
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_SAMESITE="None",
+        PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=365)
     )
     if test_config is None:  # pragma: no cover
         # load the instance config, if it exists, when not testing

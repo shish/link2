@@ -383,6 +383,7 @@ class Mutation:
         user = by_username(info, username)
         if not user or not user.check_password(password):
             raise Exception("User not found")
+        info.context["cookie"].permanent = True
         info.context["cookie"]["username"] = user.username
         return user
 
