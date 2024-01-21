@@ -1,15 +1,23 @@
 .www {
     white-space: nowrap;
     text-align: right;
-
-    INPUT {
-        vertical-align: middle;
-        margin-top: -6px;
-    }
+    display: flex;
+    justify-content: right;
 
     LABEL {
+        flex: 0 0 auto;
         padding: 0px 4px;
         border-radius: 4px;
+        display: flex;
+        align-items: bottom;
+        margin-left: 0.25em;
+        DIV {
+            flex: 0 0 auto;
+        }
+        INPUT {
+            margin: 0 0.25em;
+            flex: 0 0 auto;
+        }
     }
 
     color: black;

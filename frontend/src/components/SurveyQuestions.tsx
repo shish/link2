@@ -67,9 +67,7 @@ export function SurveyQuestions({
                     </tr>
                     <tr>
                         <th>Thing</th>
-                        <th
-                            style={{ textAlign: "right", whiteSpace: "nowrap" }}
-                        >
+                        <th style={{ textAlign: "right", whiteSpace: "nowrap" }}>
                             Want / Will / Won't{" "}
                             <Tip text="Want to do / Will try for somebody else's benefit / Won't do" />
                         </th>
@@ -223,9 +221,9 @@ export function Radio({
 }): React.ReactElement {
     return (
         <label className={className}>
-            {label1}
+            <div>{label1}</div>
             <input type="radio" checked={checked} onChange={onChange} />
-            {label2}
+            <div>{label2}</div>
         </label>
     );
 }
