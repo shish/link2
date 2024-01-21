@@ -96,7 +96,7 @@ export function SurveyView() {
         <Page title={survey.name} className={css.page}>
             <SurveyDescription survey={survey} />
             <SurveyPrivacy survey={survey} response={myResponse} />
-            {myResponse && <SurveyQuestions survey={survey} />}
+            {myResponse && <SurveyQuestions survey={survey} response={myResponse} />}
             {myResponse && <AddQuestion survey={survey} />}
             {myResponse && <OtherResponses survey_id={survey.id} />}
         </Page>

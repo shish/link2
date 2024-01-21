@@ -85,7 +85,7 @@ export function ResponseView() {
     });
 
     return (
-        <Page title="Compare" className={css.page}>
+        <Page title={"Compare with " + (response.owner ? response.owner.username : "anonymous")} className={css.page}>
             <CompareIntro response={response} />
 
             <Section className={css.answers}>

@@ -4,6 +4,7 @@ import { graphql, useFragment as fragCast } from "../gql";
 import css from "./SurveyQuestions.module.scss";
 import {
     Question,
+    ResponseWithAnswersFragment,
     SurveyViewFragment,
     Www,
 } from "../gql/graphql";
@@ -19,9 +20,10 @@ const ANSWER_FRAGMENT = graphql(`
 `);
 
 export function SurveyQuestions({
-    survey,
+    survey, response,
 }: {
     survey: SurveyViewFragment;
+    response: ResponseWithAnswersFragment;
 }): React.ReactElement {
     const sections = Array.from(
         new Set(survey.questions.map((q) => q.section)),
@@ -40,6 +42,16 @@ export function SurveyQuestions({
                 questions_header.scrollIntoView();
             }
         }, 0);
+    }
+
+    function finish() {
+        const my_link = window.location.protocol +
+            "//" +
+            window.location.host +
+            "/response/" +
+            response?.id;
+        navigator.clipboard.writeText(my_link);
+        alert("All saved! The link to your results is in your clipboard, send to a friend to compare <3");
     }
 
     return (
@@ -96,14 +108,14 @@ export function SurveyQuestions({
                                     Page {current_section_num + 1}/{sections.length}
                                 </div>
                                 <button
-                                    onClick={() =>
+                                    onClick={() => {
+                                        on_final_page ? finish() :
                                         setSectionAndScrollToQuestionsHeader(
                                             next_section,
                                         )
-                                    }
-                                    disabled={on_final_page}
+                                    }}
                                 >
-                                    {on_final_page ? "Finished :-)" : "Next"}
+                                    {on_final_page ? "Finish" : "Next"}
                                 </button>
                             </div>
                         </td>
