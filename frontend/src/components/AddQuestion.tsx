@@ -35,7 +35,7 @@ export const AddQuestion = function ({
 
 
     return (
-        <section>
+        <section style={{ gridArea: "addq" }}>
             <h3>Add Question</h3>
             <form onSubmit={(e) => {
                 e.preventDefault();
