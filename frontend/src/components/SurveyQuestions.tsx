@@ -175,24 +175,26 @@ function Radios({
     onChange: (v: Www) => void;
 }) {
     return (
-        <td className={css.www}>
-            <Radio
-                className={css.want}
-                label1={"Yay!"}
-                checked={value == Www.Want}
-                onChange={() => onChange(Www.Want)}
-            />
-            <Radio
-                className={css.will}
-                checked={value == Www.Will}
-                onChange={() => onChange(Www.Will)}
-            />
-            <Radio
-                className={css.wont}
-                label2={"Boo!"}
-                checked={value == Www.Wont}
-                onChange={() => onChange(Www.Wont)}
-            />
+        <td>
+            <div className={css.www}>
+                <Radio
+                    className={css.want}
+                    label1={"Yay!"}
+                    checked={value == Www.Want}
+                    onChange={() => onChange(Www.Want)}
+                />
+                <Radio
+                    className={css.will}
+                    checked={value == Www.Will}
+                    onChange={() => onChange(Www.Will)}
+                />
+                <Radio
+                    className={css.wont}
+                    label2={"Boo!"}
+                    checked={value == Www.Wont}
+                    onChange={() => onChange(Www.Wont)}
+                />
+            </div>
         </td>
     );
     /*
