@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import {
-    Privacy, ResponseWithAnswersFragment, SurveyWithResponseFragment
+    Privacy, ResponseWithAnswersFragment, SurveyViewFragment
 } from "../gql/graphql";
 import { GET_SURVEY } from "../pages/SurveyView";
 import { graphql } from "../gql";
@@ -19,7 +19,7 @@ export const SAVE_RESPONSE = graphql(`
 export function SurveyPrivacy({
     survey, response,
 }: {
-    survey: SurveyWithResponseFragment;
+    survey: SurveyViewFragment;
     response: ResponseWithAnswersFragment | null | undefined;
 }): React.ReactElement {
     const [privacy, setPrivacy] = useState(response?.privacy);
