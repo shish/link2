@@ -30,6 +30,7 @@ export function SurveyQuestions({
     const current_section_num = sections.indexOf(section);
     const prev_section = sections[current_section_num - 1];
     const next_section = sections[current_section_num + 1];
+    const on_final_page = current_section_num >= sections.length - 1;
 
     function setSectionAndScrollToQuestionsHeader(section: string) {
         setSection(section);
@@ -102,12 +103,9 @@ export function SurveyQuestions({
                                             next_section,
                                         )
                                     }
-                                    disabled={
-                                        current_section_num >=
-                                        sections.length - 1
-                                    }
+                                    disabled={on_final_page}
                                 >
-                                    Next
+                                    {on_final_page ? "Finished :-)" : "Next"}
                                 </button>
                             </div>
                         </td>
