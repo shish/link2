@@ -1,0 +1,53 @@
+[project]
+name = "link"
+version = "2.0.0"
+authors = [
+    {name = "Shish", email = "shish@shishnet.org"},
+]
+description = "Interest Link"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "strawberry-graphql[debug-server]",
+    "strawberry-sqlalchemy-mapper",
+    "sqlalchemy",
+    "flask-sqlalchemy",
+    "flask[async]",
+    "bcrypt",
+    "gunicorn",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "mypy",
+    "pytest",
+    "pytest-asyncio",
+    "pytest-subtests",
+    "pytest-coverage",
+]
+
+[tool.setuptools]
+py-modules = ["backend"]
+
+[tool.pytest.ini_options]
+addopts = "--cov --cov-report term-missing --cov-fail-under 95"
+
+[tool.coverage.run]
+source = ["backend"]
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+extend-exclude = '''
+/(
+  | venv
+)/
+'''
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+files = "backend"
