@@ -2,7 +2,7 @@ import typing as t
 import bcrypt
 import enum
 import os
-from sqlalchemy import ForeignKey, create_engine, UniqueConstraint, Enum
+from sqlalchemy import ForeignKey, create_engine, Enum
 from sqlalchemy.orm import (
     Session,
     DeclarativeBase,
@@ -44,10 +44,16 @@ class Friendship(Base):
     confirmed: Mapped[bool] = mapped_column(default=False)
 
     friend_a: Mapped["User"] = relationship(
-        "User", back_populates="friends_outgoing", foreign_keys=[friend_a_id], lazy="joined"
+        "User",
+        back_populates="friends_outgoing",
+        foreign_keys=[friend_a_id],
+        lazy="joined",
     )
     friend_b: Mapped["User"] = relationship(
-        "User", back_populates="friends_incoming", foreign_keys=[friend_b_id], lazy="joined"
+        "User",
+        back_populates="friends_incoming",
+        foreign_keys=[friend_b_id],
+        lazy="joined",
     )
 
 
@@ -193,9 +199,9 @@ def populate_example_data(db: Session):
         db.add(pets)
         db.flush()
 
-        n = ""
-        s = "Small Animals"
-        l = "Large Animals"
+        na = ""
+        sa = "Small Animals"
+        la = "Large Animals"
 
         class X:
             n = 0.0
@@ -220,15 +226,15 @@ def populate_example_data(db: Session):
             return q
 
         qs = [
-            qgen(n, "Human (I am the owner)", "Human (I am the pet)"),
-            qgen(n, "Humans", extra="As in children"),
-            qgen(s, "Cats"),
-            qgen(s, "Dogs"),
-            qgen(s, "Rabbits"),
-            qgen(s, "Birds"),
-            qgen(s, "Lizards"),
-            qgen(l, "Horses"),
-            qgen(l, "Llamas"),
+            qgen(na, "Human (I am the owner)", "Human (I am the pet)"),
+            qgen(na, "Humans", extra="As in children"),
+            qgen(sa, "Cats"),
+            qgen(sa, "Dogs"),
+            qgen(sa, "Rabbits"),
+            qgen(sa, "Birds"),
+            qgen(sa, "Lizards"),
+            qgen(la, "Horses"),
+            qgen(la, "Llamas"),
         ]
         db.add_all(qs)
         db.flush()  # ensure ids are populated

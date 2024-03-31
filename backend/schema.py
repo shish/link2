@@ -75,7 +75,7 @@ class User:
     )
     def friends_incoming(self: m.User, info: Info) -> t.List[m.User]:
         return [f.friend_a for f in self.friends_incoming if not f.confirmed]
-    
+
     @strawberry.field
     def is_friend(self: m.User, info: Info) -> bool:
         return self in get_me_or_die(info, "Anonymous has no friends").friends
@@ -312,7 +312,7 @@ class Query:
             )
         ):
             return response
-        raise Exception(f"Response doesn't exist, or is private")
+        raise Exception("Response doesn't exist, or is private")
 
 
 @strawberry.input
@@ -324,6 +324,7 @@ class AnswerInput:
 @strawberry.input
 class ResponseInput:
     privacy: Privacy
+
 
 @strawberry.type
 class Mutation:
@@ -379,7 +380,6 @@ class Mutation:
 
     @strawberry.mutation(graphql_type=t.Optional[User])
     def login(self, info: Info, username: str, password: str) -> t.Optional[m.User]:
-        db = info.context["db"]
         user = by_username(info, username)
         if not user or not user.check_password(password):
             raise Exception("User not found")
@@ -460,7 +460,7 @@ class Mutation:
         self, info: Info, survey_id: int, question: QuestionInput
     ) -> m.Question:
         db = info.context["db"]
-        user = get_me_or_die(info, "Anonymous users can't add questions")
+        _user = get_me_or_die(info, "Anonymous users can't add questions")
         survey = db.get(m.Survey, survey_id)
         if not survey:
             raise Exception("Survey not found")
@@ -510,14 +510,11 @@ class Mutation:
         if not survey:
             raise Exception("Survey not found")
 
-        db_response = (
-            db.scalars(
-                select(m.Response).where(
-                    m.Response.survey_id == survey.id, m.Response.user_id == user.id
-                )
+        db_response = db.scalars(
+            select(m.Response).where(
+                m.Response.survey_id == survey.id, m.Response.user_id == user.id
             )
-            .first()
-        )
+        ).first()
         if not db_response:
             db_response = m.Response(
                 survey_id=survey.id,
@@ -529,7 +526,7 @@ class Mutation:
             db_response.privacy = response.privacy
         db.flush()
         return db_response
-    
+
     @strawberry.mutation(graphql_type=Answer)
     def save_answer(
         self, info: Info, question_id: int, answer: AnswerInput
@@ -539,11 +536,12 @@ class Mutation:
         question = db.get(m.Question, question_id)
         if not question:
             raise Exception("Question not found")
-        
+
         response = (
             db.execute(
                 select(m.Response).where(
-                    m.Response.survey_id == question.survey_id, m.Response.user_id == user.id
+                    m.Response.survey_id == question.survey_id,
+                    m.Response.user_id == user.id,
                 )
             )
             .scalars()
@@ -567,6 +565,7 @@ class Mutation:
 
 #######################################################################
 # Utils
+
 
 def validate_new_username(info: Info, username: str) -> None:
     if not username:

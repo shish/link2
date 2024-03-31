@@ -33,7 +33,7 @@ def create_app(test_config=None):
         DATABASE_ECHO=False,
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_SAMESITE="None",
-        PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=365)
+        PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=365),
     )
     if test_config is None:  # pragma: no cover
         # load the instance config, if it exists, when not testing
@@ -78,9 +78,7 @@ def create_app(test_config=None):
 
     app.add_url_rule(
         "/graphql",
-        view_func=MyGraphQLView.as_view(
-            "graphql_view", schema=s.schema, graphiql=True
-        ),
+        view_func=MyGraphQLView.as_view("graphql_view", schema=s.schema, graphiql=True),
     )
 
     @app.route("/favicon.svg")

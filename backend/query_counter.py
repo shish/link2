@@ -1,6 +1,7 @@
 from strawberry.extensions import SchemaExtension
 from sqlalchemy import event
 
+
 class QueryCounter(SchemaExtension):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

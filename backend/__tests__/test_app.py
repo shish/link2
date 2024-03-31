@@ -4,6 +4,7 @@ from flask.testing import FlaskClient
 
 from ..app import create_app
 
+
 @pytest.fixture
 def app():
     yield create_app(

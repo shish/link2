@@ -53,7 +53,7 @@ async def test_createUser(db: Session, query: Query, subtests):
             email="",
             error="A user with that name already exists",
         )
-        assert result.data["createUser"] == None
+        assert result.data["createUser"] is None
 
     with subtests.test("login"):
         result = await query(
@@ -77,7 +77,7 @@ async def test_createUser(db: Session, query: Query, subtests):
             email="",
             error="Username is required",
         )
-        assert result.data["createUser"] == None
+        assert result.data["createUser"] is None
 
     with subtests.test("badname - long"):
         result = await query(
@@ -88,7 +88,7 @@ async def test_createUser(db: Session, query: Query, subtests):
             email="",
             error="Username needs to be less than 32 characters",
         )
-        assert result.data["createUser"] == None
+        assert result.data["createUser"] is None
 
     with subtests.test("badname - punctuation"):
         result = await query(
@@ -99,7 +99,7 @@ async def test_createUser(db: Session, query: Query, subtests):
             email="",
             error="Username can only contain letters, numbers, and underscores",
         )
-        assert result.data["createUser"] == None
+        assert result.data["createUser"] is None
 
     with subtests.test("badpass"):
         result = await query(
@@ -110,7 +110,7 @@ async def test_createUser(db: Session, query: Query, subtests):
             email="",
             error="Bad password",
         )
-        assert result.data["createUser"] == None
+        assert result.data["createUser"] is None
 
 
 @pytest.mark.asyncio
@@ -119,14 +119,14 @@ async def test_login(query):
         'mutation m { login(username: "Alice", password: "badpass") { username } }',
         error="User not found",
     )
-    assert result.data["login"] == None
+    assert result.data["login"] is None
 
 
 @pytest.mark.asyncio
 async def test_login_logout(query: Query, login: Login, logout: Logout):
     # anonymous
     result = await query("query q { user { username } }")
-    assert result.data["user"] == None
+    assert result.data["user"] is None
 
     # log in
     await login("Alice")
@@ -140,7 +140,7 @@ async def test_login_logout(query: Query, login: Login, logout: Logout):
 
     # anonymous
     result = await query("query q { user { username } }")
-    assert result.data["user"] == None
+    assert result.data["user"] is None
 
 
 UPDATE_USER = """
@@ -175,7 +175,7 @@ async def test_updateUser_anon(query: Query):
         email="",
         error="Anonymous users can't save settings",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -190,7 +190,7 @@ async def test_updateUser_badpass(query: Query, login: Login):
         email="",
         error="Current password incorrect",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -205,7 +205,7 @@ async def test_updateUser_conflict_username(query: Query, login: Login):
         email="",
         error="Another user with that name already exists",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -243,7 +243,7 @@ async def test_createSurvey(db: Session, query: Query, login: Login, subtests):
         result = await query(
             CREATE_SURVEY, error="Anonymous users can't create surveys"
         )
-        assert result.data == None
+        assert result.data is None
 
     with subtests.test("user"):
         # log in
@@ -273,7 +273,7 @@ async def test_addQuestion(db: Session, query: Query, login: Login, subtests):
             'mutation m { addQuestion(surveyId: 1, question: { text: "Test" }) { id } }',
             error="Anonymous users can't add questions",
         )
-        assert result.data == None
+        assert result.data is None
 
     with subtests.test("bad survey"):
         # log in
@@ -284,7 +284,7 @@ async def test_addQuestion(db: Session, query: Query, login: Login, subtests):
             'mutation m { addQuestion(surveyId: 999, question: { text: "Test" }) { id } }',
             error="Survey not found",
         )
-        assert result.data == None
+        assert result.data is None
 
     with subtests.test("user"):
         # log in
@@ -309,7 +309,7 @@ async def test_updateQuestion(db: Session, query: Query, login: Login, subtests)
             'mutation m { updateQuestion(questionId: 1, question: { text: "Test" }) { id } }',
             error="Anonymous users can't update questions",
         )
-        assert result.data == None
+        assert result.data is None
 
     with subtests.test("bad question"):
         # log in
@@ -320,7 +320,7 @@ async def test_updateQuestion(db: Session, query: Query, login: Login, subtests)
             'mutation m { updateQuestion(questionId: 999, question: { text: "Test" }) { id } }',
             error="Question not found",
         )
-        assert result.data == None
+        assert result.data is None
 
     with subtests.test("baduser"):
         # log in
@@ -371,7 +371,7 @@ SAVE_RESPONSE = """
 async def test_saveResponse_anon(db: Session, query: Query, login: Login, subtests):
     # anon can't create a response
     result = await query(SAVE_RESPONSE, error="Anonymous users can't save responses")
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -384,7 +384,7 @@ async def test_saveResponse_bad_survey(
         "mutation m { saveResponse(surveyId: 999, response: { privacy: PUBLIC }) { id } }",
         error="Survey not found",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -435,6 +435,7 @@ async def test_saveResponse_create(db: Session, query: Query, login: Login, subt
     assert response.owner.username == "Frank"
     assert response.privacy == m.Privacy.PUBLIC
 
+
 @pytest.mark.asyncio
 async def test_saveAnswer_anon(db: Session, query: Query, login: Login, subtests):
     # anon can't create a response
@@ -442,7 +443,8 @@ async def test_saveAnswer_anon(db: Session, query: Query, login: Login, subtests
         "mutation m { saveAnswer(questionId: 1, answer: { value: WILL }) { id } }",
         error="Anonymous users can't save answers",
     )
-    assert result.data == None
+    assert result.data is None
+
 
 @pytest.mark.asyncio
 async def test_saveAnswer_bad_question(
@@ -453,7 +455,8 @@ async def test_saveAnswer_bad_question(
         "mutation m { saveAnswer(questionId: 999, answer: { value: WILL }) { id } }",
         error="Question not found",
     )
-    assert result.data == None
+    assert result.data is None
+
 
 @pytest.mark.asyncio
 async def test_saveAnswer_create(db: Session, query: Query, login: Login, subtests):
@@ -486,6 +489,7 @@ async def test_saveAnswer_create(db: Session, query: Query, login: Login, subtes
     assert answer.value == m.WWW.WILL
     assert answer.flip == m.WWW.WONT
 
+
 @pytest.mark.asyncio
 async def test_saveAnswer_update(db: Session, query: Query, login: Login, subtests):
     # check that alice already has a response for survey 1
@@ -510,6 +514,7 @@ async def test_saveAnswer_update(db: Session, query: Query, login: Login, subtes
     )
     assert answer.value == m.WWW.WILL
 
+
 @pytest.mark.asyncio
 async def test_addFriend_anon(query: Query):
     # anon can't add a friend
@@ -517,7 +522,7 @@ async def test_addFriend_anon(query: Query):
         'mutation m { addFriend(username: "Frank") }',
         error="Anonymous users can't add friends",
     )
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
 
 @pytest.mark.asyncio
@@ -528,7 +533,7 @@ async def test_addFriend_self(query: Query, login: Login):
         'mutation m { addFriend(username: "Alice") }',
         error="You can't add yourself",
     )
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
 
 @pytest.mark.asyncio
@@ -536,14 +541,14 @@ async def test_addFriend_dupe(query: Query, login: Login):
     # log in as alice and add frank as a friend
     await login("Alice")
     result = await query('mutation m { addFriend(username: "Frank") }')
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
     # try to add frank again
     result = await query(
         'mutation m { addFriend(username: "Frank") }',
         error="Friend request already sent",
     )
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
 
 @pytest.mark.asyncio
@@ -553,7 +558,7 @@ async def test_addFriend_notfound(query: Query, login: Login):
     result = await query(
         'mutation m { addFriend(username: "NotAUser") }', error="User not found"
     )
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
 
 @pytest.mark.asyncio
@@ -563,7 +568,7 @@ async def test_removeFriend_notfound(query: Query, login: Login):
     result = await query(
         'mutation m { removeFriend(username: "NotAUser") }', error="User not found"
     )
-    assert result.data["removeFriend"] == None
+    assert result.data["removeFriend"] is None
 
 
 @pytest.mark.asyncio
@@ -571,7 +576,7 @@ async def test_addFriend_e2e(query: Query, login: Login):
     # log in as alice and add frank as a friend
     await login("Alice")
     result = await query('mutation m { addFriend(username: "Frank") }')
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
     # check the request was created
     result = await query("query q { user { friendsOutgoing { username } } }")
@@ -588,7 +593,7 @@ async def test_addFriend_e2e(query: Query, login: Login):
 
     # accept the request
     result = await query('mutation m { addFriend(username: "Alice") }')
-    assert result.data["addFriend"] == None
+    assert result.data["addFriend"] is None
 
     # check frank's friends list
     result = await query("query q { user { friends { username } } }")
@@ -601,7 +606,7 @@ async def test_addFriend_e2e(query: Query, login: Login):
 
     # remove the friend
     result = await query('mutation m { removeFriend(username: "Frank") }')
-    assert result.data["removeFriend"] == None
+    assert result.data["removeFriend"] is None
 
     # check alice's friends list
     result = await query("query q { user { friends { username } } }")

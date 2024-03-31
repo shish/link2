@@ -12,7 +12,7 @@ import itertools
 async def test_user_self(query: Query, login: Login, subtests):
     with subtests.test("anon-view-self"):
         result = await query("query q { user { username } }")
-        assert result.data["user"] == None
+        assert result.data["user"] is None
 
     with subtests.test("user-view-self"):
         await login("Alice")
@@ -49,13 +49,15 @@ async def test_user_others(query: Query, login: Login, subtests):
             'query q { user(username: "Alice") { username } }',
             error="Anonymous users can't view other users",
         )
-        assert result.data["user"] == None
+        assert result.data["user"] is None
 
     with subtests.test("user-view-others-username"):
         await login("Alice")
         result = await query('query q { user(username: "Bob") { username isFriend } }')
         assert result.data["user"] == {"username": "Bob", "isFriend": True}
-        result = await query('query q { user(username: "Charlie") { username isFriend } }')
+        result = await query(
+            'query q { user(username: "Charlie") { username isFriend } }'
+        )
         assert result.data["user"] == {"username": "Charlie", "isFriend": False}
 
     with subtests.test("user-view-others-friends"):
@@ -64,7 +66,7 @@ async def test_user_others(query: Query, login: Login, subtests):
             'query q { user(username: "Bob") { friends { username } } }',
             error="You can only view your own data.",
         )
-        assert result.data["user"] == None
+        assert result.data["user"] is None
 
 
 @pytest.mark.asyncio
@@ -121,7 +123,7 @@ async def test_survey_stats(query: Query, subtests, login: Login):
     with subtests.test("anon"):
         result = await query(GET_SURVEY)
         assert result.data["survey"]["name"] == "Pets"
-        assert result.data["survey"]["stats"] == None
+        assert result.data["survey"]["stats"] is None
 
     with subtests.test("user"):
         await login("Alice")
@@ -169,7 +171,7 @@ async def test_survey_myResponse(login: Login, query: Query, subtests):
             "query q { survey(surveyId: 1) { myResponse { owner { username } } } }",
             error="Anonymous users can't view responses",
         )
-        assert result.data["survey"]["myResponse"] == None
+        assert result.data["survey"]["myResponse"] is None
 
     with subtests.test("existing"):
         await login("Alice")
@@ -183,7 +185,7 @@ async def test_survey_myResponse(login: Login, query: Query, subtests):
         result = await query(
             "query q { survey(surveyId: 1) { myResponse { owner { username } } } }"
         )
-        assert result.data["survey"]["myResponse"] == None
+        assert result.data["survey"]["myResponse"] is None
 
 
 @pytest.mark.asyncio
@@ -207,7 +209,7 @@ async def test_survey_responses(
     # anon can't view any responses
     with subtests.test("anon"):
         result = await query(q, error="Anonymous users can't view responses")
-        assert result.data == None
+        assert result.data is None
 
     #                 |   response privacy
     #  response owner | public  anonymous  friends
@@ -263,7 +265,7 @@ async def test_response(db: Session, query: Query, login: Login, subtests):
         result = await query(
             q, responseId=1, error="Anonymous users can't view responses"
         )
-        assert result.data == None
+        assert result.data is None
 
     #                 |   response privacy
     #  response owner | public  private  friends
@@ -319,7 +321,7 @@ async def test_response(db: Session, query: Query, login: Login, subtests):
                     responseId=response_id,
                     error="Response doesn't exist, or is private",
                 )
-                assert result.data == None
+                assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -346,7 +348,7 @@ async def test_response_answers(db: Session, query: Query, login: Login, subtest
         result = await query(
             GET_RESPONSE, responseId=1, error="Anonymous users can't view responses"
         )
-        assert result.data == None
+        assert result.data is None
 
     # user can see their own answers
     with subtests.test("user-view-self"):
@@ -365,7 +367,7 @@ async def test_response_answers(db: Session, query: Query, login: Login, subtest
             responseId=2,
             error="You can't view other people's raw answers",
         )
-        assert result.data == None
+        assert result.data is None
 
 
 COMPARE_RESPONSE = """
@@ -397,7 +399,7 @@ async def test_response_comparison_anon(db: Session, query: Query):
         responseId=1,
         error="Anonymous users can't view responses",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -410,7 +412,7 @@ async def test_response_comparison_self(db: Session, query: Query, login: Login)
     result = await query(
         COMPARE_RESPONSE, responseId=1, error="You can't compare yourself to yourself"
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -424,7 +426,7 @@ async def test_response_comparison_friend(db: Session, query: Query, login: Logi
     await login("Alice")
     result = await query(COMPARE_RESPONSE, responseId=response.id)
     assert result.data["response"]["owner"]["username"] == "Bob"
-    assert result.data["response"]["comparison"] != None
+    assert result.data["response"]["comparison"] is not None
 
 
 @pytest.mark.asyncio
@@ -441,7 +443,7 @@ async def test_response_comparison_nonfriend(db: Session, query: Query, login: L
         responseId=response.id,
         error="Response doesn't exist, or is private",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -455,7 +457,7 @@ async def test_response_comparison_public(db: Session, query: Query, login: Logi
     await login("Alice")
     result = await query(COMPARE_RESPONSE, responseId=response.id)
     assert result.data["response"]["owner"]["username"] == "Dave"
-    assert result.data["response"]["comparison"] != None
+    assert result.data["response"]["comparison"] is not None
 
 
 @pytest.mark.asyncio
@@ -468,8 +470,8 @@ async def test_response_comparison_anonymous(db: Session, query: Query, login: L
 
     await login("Alice")
     result = await query(COMPARE_RESPONSE, responseId=response.id)
-    assert result.data["response"]["owner"] == None
-    assert result.data["response"]["comparison"] != None
+    assert result.data["response"]["owner"] is None
+    assert result.data["response"]["comparison"] is not None
 
 
 @pytest.mark.asyncio
@@ -487,7 +489,7 @@ async def test_response_comparison_noresponse(db: Session, query: Query, login: 
         responseId=1,
         error="You haven't responded to this survey",
     )
-    assert result.data == None
+    assert result.data is None
 
 
 @pytest.mark.asyncio
@@ -603,7 +605,12 @@ async def test_response_comparison_flip(
 
             result = await query(COMPARE_RESPONSE, responseId=bob_response.id)
             cs = result.data["response"]["comparison"]
-            if alice_value is None or alice_flip is None or bob_value is None or bob_flip is None:
+            if (
+                alice_value is None
+                or alice_flip is None
+                or bob_value is None
+                or bob_flip is None
+            ):
                 assert len(cs) == 0
             elif (alice_value, bob_flip) in s.visible_combos and (
                 alice_flip,
