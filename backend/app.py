@@ -82,15 +82,20 @@ def create_app(test_config=None):
     )
 
     @app.route("/favicon.svg")
-    def favicon() -> str:
-        return app.send_static_file("favicon.svg")
+    def favicon() -> Response:
+        if os.path.exists("../frontend/dist/"):
+            return app.send_static_file("favicon.svg")
+        else:
+            return Response(
+                "Frontend has not been built", mimetype="image/svg+xml; charset=utf-8"
+            )
 
     @app.route("/heartbeat")
     def heartbeat():
         return jsonify({"status": "healthy"})
 
     @app.route("/assets/<path:x>")
-    def assets(x) -> str:
+    def assets(x) -> Response:
         return app.send_static_file(f"assets/{x}")
 
     @app.route("/error")
@@ -99,7 +104,10 @@ def create_app(test_config=None):
 
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
-    def root(path) -> str:
-        return app.send_static_file("index.html")
+    def root(path) -> Response:
+        if os.path.exists("../frontend/dist/"):
+            return app.send_static_file("index.html")
+        else:
+            return Response("Frontend has not been built", mimetype="text/html")
 
     return app

@@ -8,14 +8,14 @@ from flask.sessions import SessionMixin
 from sqlalchemy import select, func, and_, or_
 from sqlalchemy.orm import Session
 import strawberry
-from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyMapper  # type: ignore
+from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyMapper, StrawberrySQLAlchemyLoader  # type: ignore
 from strawberry.permission import BasePermission
 from strawberry.types.info import Info as SInfo
 
 from . import models as m
 from .query_counter import QueryCounter
 
-strawberry_sqlalchemy_mapper = StrawberrySQLAlchemyMapper()
+strawberry_sqlalchemy_mapper: StrawberrySQLAlchemyMapper = StrawberrySQLAlchemyMapper()
 
 
 Context = TypedDict(
@@ -23,7 +23,7 @@ Context = TypedDict(
     {
         "db": Session,
         "cookie": SessionMixin,
-        "sqlalchemy_loader": StrawberrySQLAlchemyMapper,
+        "sqlalchemy_loader": StrawberrySQLAlchemyLoader,
         "cache": t.Dict[str, t.Any],
     },
 )
