@@ -15,7 +15,7 @@ EXPOSE 8000
 
 ENV PYTHONUNBUFFERED 1
 RUN /usr/local/bin/pip install --upgrade pip setuptools wheel
-COPY pyproject.toml /app
+COPY pyproject.toml /app/
 WORKDIR /app
 RUN /usr/local/bin/pip install -e .
 COPY . /app
