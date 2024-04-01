@@ -85,7 +85,7 @@ def create_app(test_config=None):
 
     @app.route("/favicon.svg")
     def favicon() -> Response:
-        if os.path.exists("../frontend/dist/"):
+        if os.path.exists("./frontend/dist/favicon.svg"):
             return app.send_static_file("favicon.svg")
         else:
             return Response(
@@ -107,7 +107,7 @@ def create_app(test_config=None):
     @app.route("/", defaults={"path": ""})
     @app.route("/<path:path>")
     def root(path) -> Response:
-        if os.path.exists("../frontend/dist/"):
+        if os.path.exists("./frontend/dist/index.html"):
             return app.send_static_file("index.html")
         else:
             return Response("Frontend has not been built", mimetype="text/html")
