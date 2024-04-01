@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from flask import Flask
 from flask.testing import FlaskClient
@@ -30,6 +32,9 @@ def test_graphql(client: FlaskClient):
 
 
 def test_static(client: FlaskClient):
+    if not os.path.exists("./frontend/dist/favicon.svg"):
+        pytest.skip("frontend not built")
+
     response = client.get("/favicon.svg")
     assert response.status_code == 200
     assert response.content_type == "image/svg+xml; charset=utf-8"
@@ -44,6 +49,9 @@ def test_static(client: FlaskClient):
 
 
 def test_webapp(client: FlaskClient):
+    if not os.path.exists("./frontend/dist/index.html"):
+        pytest.skip("frontend not built")
+
     response = client.get("/")
     assert response.status_code == 200
     assert response.content_type == "text/html; charset=utf-8"
