@@ -31,7 +31,7 @@ Backend:
 ```
 python3 -m venv venv
 ./venv/bin/pip install -r backend/requirements.txt
-./venv/bin/python3 -m backend.models    # create a database with example data
+./venv/bin/flask --app backend.app init-db    # create a database with example data
 ./venv/bin/flask --app backend.app run --port 8000 --debug            # for debugging
 ./venv/bin/gunicorn -w 4 'backend.app:create_app()' -b 0.0.0.0:8000   # for prod
 ```

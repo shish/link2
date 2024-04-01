@@ -1,8 +1,7 @@
 import typing as t
 import bcrypt
 import enum
-import os
-from sqlalchemy import ForeignKey, create_engine, Enum
+from sqlalchemy import ForeignKey, Enum
 from sqlalchemy.orm import (
     Session,
     DeclarativeBase,
@@ -260,11 +259,3 @@ def populate_example_data(db: Session):
         db.add(r)
 
     db.commit()
-
-
-if __name__ == "__main__":  # pragma: no cover
-    os.makedirs("./data", exist_ok=True)
-    engine = create_engine("sqlite:///data/link2.sqlite", echo=False)
-    Base.metadata.drop_all(engine)
-    Base.metadata.create_all(engine)
-    populate_example_data(Session(engine))

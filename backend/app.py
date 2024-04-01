@@ -5,8 +5,10 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 import datetime
+import click
 
 from . import schema as s
+from . import models as m
 
 
 class MyGraphQLView(AsyncGraphQLView):
@@ -29,8 +31,8 @@ def create_app(test_config=None):
         static_folder="../frontend/dist",
     )
     app.config.from_mapping(
-        DATABASE_URL="sqlite:///data/link2.sqlite",
-        DATABASE_ECHO=False,
+        SQLALCHEMY_DATABASE_URI="sqlite:///data/link2.sqlite",
+        SQLALCHEMY_DATABASE_ECHO=False,
         SESSION_COOKIE_SECURE=True,
         SESSION_COOKIE_SAMESITE="None",
         PERMANENT_SESSION_LIFETIME=datetime.timedelta(days=365),
@@ -38,6 +40,7 @@ def create_app(test_config=None):
     if test_config is None:  # pragma: no cover
         # load the instance config, if it exists, when not testing
         app.config.from_pyfile("config.py", silent=True)
+        os.makedirs("./data", exist_ok=True)
         if not os.path.exists("./data/secret.txt"):
             with open("./data/secret.txt", "wb") as fp:
                 fp.write(os.urandom(32))
@@ -54,9 +57,18 @@ def create_app(test_config=None):
     # Load database
 
     engine = create_engine(
-        app.config.get("DATABASE_URL"),
+        app.config.get("SQLALCHEMY_DATABASE_URI"),
         echo=app.config.get("DATABASE_ECHO"),
     )
+
+    @click.command("init-db")
+    def init_db_command():  # pragma: no cover
+        """Clear the existing data and create new tables."""
+        with app.app_context():
+            m.Base.metadata.drop_all(engine)
+            m.Base.metadata.create_all(engine)
+            m.populate_example_data(Session(engine))
+        click.echo("Initialized the database.")
 
     @app.before_request
     def connect_db() -> None:
