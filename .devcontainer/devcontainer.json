@@ -21,7 +21,7 @@
 	},
 
 	"updateContentCommand": {
-		"backend": "python3 -m venv venv && venv/bin/pip install -r backend/requirements.txt && venv/bin/python3 -m backend.models",
+		"backend": "python3 -m venv venv && venv/bin/pip install -e '.[dev]' && venv/bin/python3 -m backend.models",
 		"frontend": "cd frontend && npm install",
 	},
 	"customizations": {
