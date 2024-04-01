@@ -7,6 +7,7 @@ from .. import schema as s
 from .conftest import Query, Login, Logout
 import itertools
 
+
 @pytest.mark.asyncio
 async def test_surveys_paging(db: Session, query: Query, subtests):
     result = await query("query q { surveys { name } }")

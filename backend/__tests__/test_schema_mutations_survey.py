@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 import pytest
 from .. import models as m
-from .conftest import Query, Login, Logout
+from .conftest import Query, Login
 
 
 @pytest.mark.asyncio

@@ -1,11 +1,7 @@
 # mypy: disable-error-code="index"
 
-from sqlalchemy.orm import Session
 import pytest
-from .. import models as m
-from .. import schema as s
-from .conftest import Query, Login, Logout
-import itertools
+from .conftest import Query, Login
 
 
 @pytest.mark.asyncio
