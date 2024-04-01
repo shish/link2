@@ -14,6 +14,8 @@ Once the IDE is open, `cd frontend && npm run all` to start backend and frontend
 
 A built-in browser in the IDE should open automatically, with hot-reloading configured for both backend and frontend code.
 
+There are a pre-generated set of user accounts, surveys, and responses. Log in as "alice" with password "alicepass", "bob" and "bobpass", etc
+
 
 Slowstart
 =========
