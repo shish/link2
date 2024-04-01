@@ -74,7 +74,7 @@ export function Page({
             <Header title={title} />
             <article>{children}</article>
             <footer className={css.footer}>
-                <a href="https://github.com/shish/link">Link software</a>
+                <a href="https://github.com/shish/link2">Link software</a>
                 {" by "}
                 <a href="https://shish.io/">Shish</a>
             </footer>
