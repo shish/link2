@@ -1,16 +1,19 @@
 # mypy: disable-error-code="misc"
 
-import typing as t
 import re
+import typing as t
 from typing import TypedDict
-from flask.sessions import SessionMixin
 
-from sqlalchemy import select, delete, func, and_, or_
-from sqlalchemy.orm import Session
 import strawberry
-from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyMapper, StrawberrySQLAlchemyLoader  # type: ignore
+from flask.sessions import SessionMixin
+from sqlalchemy import and_, delete, func, or_, select
+from sqlalchemy.orm import Session
 from strawberry.permission import BasePermission
 from strawberry.types.info import Info as SInfo
+from strawberry_sqlalchemy_mapper import (  # type: ignore
+    StrawberrySQLAlchemyLoader,
+    StrawberrySQLAlchemyMapper,
+)
 
 from . import models as m
 from .query_counter import QueryCounter

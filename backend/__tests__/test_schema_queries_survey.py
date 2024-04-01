@@ -1,11 +1,14 @@
 # mypy: disable-error-code="index"
 
-from sqlalchemy.orm import Session
+import itertools
+
 import pytest
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
 from .. import models as m
 from .. import schema as s
-from .conftest import Query, Login, Logout
-import itertools
+from .conftest import Login, Logout, Query
 
 
 @pytest.mark.asyncio
@@ -174,8 +177,12 @@ async def test_survey_responses(
     ]:
         with subtests.test(owner=owner, privacy=privacy, expected=expected):
             # set $owner's privacy to $privacy
-            owner_id = db.query(m.User).filter(m.User.username == owner).one().id
-            db.query(m.Response).filter(m.Response.user_id == owner_id).update(
+            owner_id = (
+                db.execute(select(m.User).where(m.User.username == owner))
+                .scalar_one()
+                .id
+            )
+            db.query(m.Response).where(m.Response.user_id == owner_id).update(
                 {"privacy": privacy}
             )
             # check if Alice can view $owner
@@ -200,7 +207,9 @@ async def test_response(db: Session, query: Query, login: Login, subtests):
 
     # anon can't view any responses, even public ones
     with subtests.test("anon"):
-        db.query(m.Response).filter(m.Response.id == 1).one().privacy = m.Privacy.PUBLIC
+        db.execute(
+            select(m.Response).where(m.Response.id == 1)
+        ).scalar_one().privacy = m.Privacy.PUBLIC
         result = await query(
             q, responseId=1, error="Anonymous users can't view responses"
         )
@@ -236,12 +245,18 @@ async def test_response(db: Session, query: Query, login: Login, subtests):
             owner_expected=owner_expected,
         ):
             # set $owner's privacy to $privacy
-            owner_id = db.query(m.User).filter(m.User.username == owner).one().id
-            db.query(m.Response).filter(m.Response.user_id == owner_id).update(
+            owner_id = (
+                db.execute(select(m.User).where(m.User.username == owner))
+                .scalar_one()
+                .id
+            )
+            db.query(m.Response).where(m.Response.user_id == owner_id).update(
                 {"privacy": privacy}
             )
             response_id = (
-                db.query(m.Response).filter(m.Response.user_id == owner_id).one().id
+                db.execute(select(m.Response).where(m.Response.user_id == owner_id))
+                .scalar_one()
+                .id
             )
 
             # check if Alice can view the response
@@ -332,7 +347,9 @@ COMPARE_RESPONSE = """
 @pytest.mark.asyncio
 async def test_response_comparison_anon(db: Session, query: Query):
     # anon can't view any responses, even public ones
-    db.query(m.Response).filter(m.Response.id == 1).one().privacy = m.Privacy.PUBLIC
+    db.execute(select(m.Response).where(m.Response.id == 1)).scalar_one().privacy = (
+        m.Privacy.PUBLIC
+    )
     result = await query(
         COMPARE_RESPONSE,
         responseId=1,
@@ -346,7 +363,10 @@ async def test_response_comparison_self(db: Session, query: Query, login: Login)
     # user can't compare themselves
     await login("Alice")
     assert (
-        db.query(m.Response).filter(m.Response.id == 1).one().owner.username == "Alice"
+        db.execute(select(m.Response).where(m.Response.id == 1))
+        .scalar_one()
+        .owner.username
+        == "Alice"
     )
     result = await query(
         COMPARE_RESPONSE, responseId=1, error="You can't compare yourself to yourself"
@@ -358,8 +378,10 @@ async def test_response_comparison_self(db: Session, query: Query, login: Login)
 async def test_response_comparison_friend(db: Session, query: Query, login: Login):
     # bob is a friend, and his response is friends-only,
     # so we can see his response, as well as his name
-    bob = db.query(m.User).filter(m.User.username == "Bob").one()
-    response = db.query(m.Response).where(m.Response.owner == bob).one()
+    bob = db.execute(select(m.User).where(m.User.username == "Bob")).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == bob)
+    ).scalar_one()
     response.privacy = m.Privacy.FRIENDS
 
     await login("Alice")
@@ -372,8 +394,12 @@ async def test_response_comparison_friend(db: Session, query: Query, login: Logi
 async def test_response_comparison_nonfriend(db: Session, query: Query, login: Login):
     # charlie is not a friend, and his response is friends-only,
     # so we can't see his response or his name
-    charlie = db.query(m.User).filter(m.User.username == "Charlie").one()
-    response = db.query(m.Response).where(m.Response.owner == charlie).one()
+    charlie = db.execute(
+        select(m.User).where(m.User.username == "Charlie")
+    ).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == charlie)
+    ).scalar_one()
     response.privacy = m.Privacy.FRIENDS
 
     await login("Alice")
@@ -389,8 +415,10 @@ async def test_response_comparison_nonfriend(db: Session, query: Query, login: L
 async def test_response_comparison_public(db: Session, query: Query, login: Login):
     # dave is a non-friend, but his response is public,
     # so we can see it as well as his name
-    dave = db.query(m.User).filter(m.User.username == "Dave").one()
-    response = db.query(m.Response).where(m.Response.owner == dave).one()
+    dave = db.execute(select(m.User).where(m.User.username == "Dave")).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == dave)
+    ).scalar_one()
     response.privacy = m.Privacy.PUBLIC
 
     await login("Alice")
@@ -403,8 +431,10 @@ async def test_response_comparison_public(db: Session, query: Query, login: Logi
 async def test_response_comparison_anonymous(db: Session, query: Query, login: Login):
     # evette is a non-friend, and her response is anonymous,
     # so we can see it but can't see who wrote it
-    evette = db.query(m.User).filter(m.User.username == "Evette").one()
-    response = db.query(m.Response).where(m.Response.owner == evette).one()
+    evette = db.execute(select(m.User).where(m.User.username == "Evette")).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == evette)
+    ).scalar_one()
     response.privacy = m.Privacy.ANONYMOUS
 
     await login("Alice")
@@ -417,10 +447,16 @@ async def test_response_comparison_anonymous(db: Session, query: Query, login: L
 async def test_response_comparison_noresponse(db: Session, query: Query, login: Login):
     # frank hasn't responded to the survey, he shouldn't be able to compare
     # his response to anyone else's, even public ones
-    frank = db.query(m.User).filter(m.User.username == "Frank").one()
-    response = db.query(m.Response).where(m.Response.owner == frank).first()
+    frank = db.execute(select(m.User).where(m.User.username == "Frank")).scalar_one()
+    response = (
+        db.execute(select(m.Response).where(m.Response.owner == frank))
+        .scalars()
+        .first()
+    )
     assert response is None
-    db.query(m.Response).filter(m.Response.id == 1).one().privacy = m.Privacy.PUBLIC
+    db.execute(select(m.Response).where(m.Response.id == 1)).scalar_one().privacy = (
+        m.Privacy.PUBLIC
+    )
 
     await login("Frank")
     result = await query(
@@ -437,15 +473,19 @@ async def test_response_comparison_nonflip(
 ):
     # we can see bob's response, and should be able to see or
     # not-see specific answers based on their value
-    alice = db.query(m.User).filter(m.User.username == "Alice").one()
-    alice_response = db.query(m.Response).where(m.Response.owner == alice).one()
-    bob = db.query(m.User).filter(m.User.username == "Bob").one()
-    bob_response = db.query(m.Response).where(m.Response.owner == bob).one()
+    alice = db.execute(select(m.User).where(m.User.username == "Alice")).scalar_one()
+    alice_response = db.execute(
+        select(m.Response).where(m.Response.owner == alice)
+    ).scalar_one()
+    bob = db.execute(select(m.User).where(m.User.username == "Bob")).scalar_one()
+    bob_response = db.execute(
+        select(m.Response).where(m.Response.owner == bob)
+    ).scalar_one()
     bob_response.privacy = m.Privacy.PUBLIC
 
     # make the survey only have a single nonflip question
     qid = 100
-    survey = db.query(m.Survey).filter(m.Survey.name == "Pets").one()
+    survey = db.execute(select(m.Survey).where(m.Survey.name == "Pets")).scalar_one()
     survey.questions = {qid: m.Question(id=qid, text="test", survey_id=survey.id)}
 
     await login("Alice")
@@ -491,15 +531,19 @@ async def test_response_comparison_flip(
 ):
     # we can see bob's response, and should be able to see or
     # not-see specific answers based on their value
-    alice = db.query(m.User).filter(m.User.username == "Alice").one()
-    alice_response = db.query(m.Response).where(m.Response.owner == alice).one()
-    bob = db.query(m.User).filter(m.User.username == "Bob").one()
-    bob_response = db.query(m.Response).where(m.Response.owner == bob).one()
+    alice = db.execute(select(m.User).where(m.User.username == "Alice")).scalar_one()
+    alice_response = db.execute(
+        select(m.Response).where(m.Response.owner == alice)
+    ).scalar_one()
+    bob = db.execute(select(m.User).where(m.User.username == "Bob")).scalar_one()
+    bob_response = db.execute(
+        select(m.Response).where(m.Response.owner == bob)
+    ).scalar_one()
     bob_response.privacy = m.Privacy.PUBLIC
 
     # make the survey only have a single flip question
     qid = 100
-    survey = db.query(m.Survey).filter(m.Survey.name == "Pets").one()
+    survey = db.execute(select(m.Survey).where(m.Survey.name == "Pets")).scalar_one()
     survey.questions = {
         qid: m.Question(
             id=qid, text="giving bacon", flip="receiving bacon", survey_id=survey.id

@@ -1,13 +1,14 @@
-from flask.sessions import SecureCookieSession
-from sqlalchemy import create_engine
-from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ignore
-from sqlalchemy.orm import Session
-from graphql import ExecutionResult
-import pytest
 import typing as t
 
-from .. import schema as s
+import pytest
+from flask.sessions import SecureCookieSession
+from graphql import ExecutionResult
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
+from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ignore
+
 from .. import models as m
+from .. import schema as s
 
 
 @pytest.fixture(autouse=True)

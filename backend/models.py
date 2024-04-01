@@ -1,14 +1,15 @@
-import typing as t
-import bcrypt
 import enum
-from sqlalchemy import ForeignKey, Enum
+import typing as t
+
+import bcrypt
+from sqlalchemy import Enum, ForeignKey
 from sqlalchemy.orm import (
-    Session,
     DeclarativeBase,
     Mapped,
+    Session,
+    attribute_keyed_dict,
     mapped_column,
     relationship,
-    attribute_keyed_dict,
 )
 
 SECURE = True

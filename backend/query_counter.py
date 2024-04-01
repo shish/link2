@@ -1,5 +1,5 @@
-from strawberry.extensions import SchemaExtension
 from sqlalchemy import event
+from strawberry.extensions import SchemaExtension
 
 
 class QueryCounter(SchemaExtension):

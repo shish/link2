@@ -1,7 +1,8 @@
 # mypy: disable-error-code="index"
 
 import pytest
-from .conftest import Query, Login
+
+from .conftest import Login, Query
 
 
 @pytest.mark.asyncio

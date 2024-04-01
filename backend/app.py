@@ -1,14 +1,15 @@
-from flask import Flask, Request, Response, g, session, jsonify
-from strawberry.flask.views import AsyncGraphQLView
-from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ignore
+import datetime
 import os
+
+import click
+from flask import Flask, Request, Response, g, jsonify, session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-import datetime
-import click
+from strawberry.flask.views import AsyncGraphQLView
+from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyLoader  # type: ignore
 
-from . import schema as s
 from . import models as m
+from . import schema as s
 
 
 class MyGraphQLView(AsyncGraphQLView):
