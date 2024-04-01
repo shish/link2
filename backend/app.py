@@ -78,7 +78,9 @@ def create_app(test_config=None):
 
     app.add_url_rule(
         "/graphql",
-        view_func=MyGraphQLView.as_view("graphql_view", schema=s.schema, graphql_ide=True),
+        view_func=MyGraphQLView.as_view(
+            "graphql_view", schema=s.schema, graphql_ide=True
+        ),
     )
 
     @app.route("/favicon.svg")

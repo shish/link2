@@ -179,90 +179,85 @@ class Response(Base):
 def populate_example_data(db: Session):
     users: t.List[User] = []
     for name in ["Alice", "Bob", "Charlie", "Dave", "Evette", "Frank"]:
-        user = db.query(User).filter(User.username == name).first()
-        if not user:
-            user = User(name, name.lower() + "pass")
-            users.append(user)
-            db.add(user)
+        user = User(name, name.lower() + "pass")
+        users.append(user)
+        db.add(user)
     [alice, bob, charlie, dave, evette, frank] = users
-
     alice.email = "alice@example.com"
 
-    pets = db.query(Survey).filter(Survey.name == "Pets").first()
-    if not pets:
-        pets = Survey(
-            name="Pets",
-            owner=alice,
-            description="What type of pet should we get?",
-            long_description="Fluffy? Fuzzy? Wonderful?",
+    f = Friendship(friend_a=alice, friend_b=bob, confirmed=True)
+    db.add(f)
+
+    f = Friendship(friend_a=charlie, friend_b=alice, confirmed=False)
+    db.add(f)
+
+    pets = Survey(
+        name="Pets",
+        owner=alice,
+        description="What type of pet should we get?",
+        long_description="Fluffy? Fuzzy? Wonderful?",
+    )
+    db.add(pets)
+    db.flush()
+
+    na = ""
+    sa = "Small Animals"
+    la = "Large Animals"
+
+    class X:
+        n = 0.0
+
+    x = X()
+
+    def qgen(
+        section: str,
+        text: str,
+        flip: t.Optional[str] = None,
+        extra: t.Optional[str] = None,
+    ) -> Question:
+        q = Question(
+            survey_id=pets.id,
+            order=x.n,
+            section=section,
+            text=text,
+            flip=flip,
+            extra=extra,
         )
-        db.add(pets)
-        db.flush()
+        x.n += 1
+        return q
 
-        na = ""
-        sa = "Small Animals"
-        la = "Large Animals"
+    qs = [
+        qgen(na, "Human (I am the owner)", "Human (I am the pet)"),
+        qgen(na, "Humans", extra="As in children"),
+        qgen(sa, "Cats"),
+        qgen(sa, "Dogs"),
+        qgen(sa, "Rabbits"),
+        qgen(sa, "Birds"),
+        qgen(sa, "Lizards"),
+        qgen(la, "Horses"),
+        qgen(la, "Llamas"),
+    ]
+    db.add_all(qs)
+    db.flush()  # ensure ids are populated
+    assert len(pets.questions) == 9
 
-        class X:
-            n = 0.0
+    for u in users:
+        pattern = [WWW.WONT, WWW.NA, WWW.WILL, WWW.WANT, WWW.WILL]
+        if u.username == "Bob":
+            pattern = [WWW.WANT, WWW.WILL, WWW.WANT]
+        if u.username == "Frank":
+            # Frank hasn't created a survey yet
+            continue
 
-        x = X()
-
-        def qgen(
-            section: str,
-            text: str,
-            flip: t.Optional[str] = None,
-            extra: t.Optional[str] = None,
-        ) -> Question:
-            q = Question(
-                survey_id=pets.id,
-                order=x.n,
-                section=section,
-                text=text,
-                flip=flip,
-                extra=extra,
+        r = Response(survey=pets, owner=u, privacy=Privacy.FRIENDS)
+        for id, q in pets.questions.items():
+            r.answers[id] = Answer(
+                response_id=r.id,
+                question_id=q.id,
+                value=pattern[q.id % len(pattern)],
+                flip=pattern[-q.id % len(pattern)],
             )
-            x.n += 1
-            return q
-
-        qs = [
-            qgen(na, "Human (I am the owner)", "Human (I am the pet)"),
-            qgen(na, "Humans", extra="As in children"),
-            qgen(sa, "Cats"),
-            qgen(sa, "Dogs"),
-            qgen(sa, "Rabbits"),
-            qgen(sa, "Birds"),
-            qgen(sa, "Lizards"),
-            qgen(la, "Horses"),
-            qgen(la, "Llamas"),
-        ]
-        db.add_all(qs)
-        db.flush()  # ensure ids are populated
-        assert len(pets.questions) == 9
-
-        for u in users:
-            pattern = [WWW.WONT, WWW.NA, WWW.WILL, WWW.WANT, WWW.WILL]
-            if u.username == "Bob":
-                pattern = [WWW.WANT, WWW.WILL, WWW.WANT]
-            if u.username == "Frank":
-                # Frank hasn't created a survey yet
-                continue
-
-            r = Response(survey=pets, owner=u, privacy=Privacy.FRIENDS)
-            for id, q in pets.questions.items():
-                r.answers[id] = Answer(
-                    response_id=r.id,
-                    question_id=q.id,
-                    value=pattern[q.id % len(pattern)],
-                    flip=pattern[-q.id % len(pattern)],
-                )
-            db.add(r)
-
-        f = Friendship(friend_a=alice, friend_b=bob, confirmed=True)
-        db.add(f)
-
-        f = Friendship(friend_a=charlie, friend_b=alice, confirmed=False)
-        db.add(f)
+        db.add(r)
 
     db.commit()
 

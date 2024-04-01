@@ -1,5 +1,6 @@
 # mypy: disable-error-code="index"
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 import pytest
 from .. import models as m
@@ -32,11 +33,11 @@ async def test_createUser(db: Session, query: Query, subtests):
         assert result.data["createUser"]["username"] == "TestUser"
 
         # check the user was created
-        user = (
-            db.query(m.User)
-            .filter(m.User.username == result.data["createUser"]["username"])
-            .one()
-        )
+        user = db.execute(
+            select(m.User).where(
+                m.User.username == result.data["createUser"]["username"]
+            )
+        ).scalar_one()
         assert user.username == "TestUser"
         assert user.check_password("TestPass")
 
@@ -254,11 +255,9 @@ async def test_createSurvey(db: Session, query: Query, login: Login, subtests):
         assert result.data["createSurvey"]["id"] is not None
 
         # check the survey was created
-        survey = (
-            db.query(m.Survey)
-            .filter(m.Survey.id == result.data["createSurvey"]["id"])
-            .one()
-        )
+        survey = db.execute(
+            select(m.Survey).where(m.Survey.id == result.data["createSurvey"]["id"])
+        ).scalar_one()
         assert survey.name == "TestName"
         assert survey.description == "TestDesc"
         assert survey.long_description == "TestLongDesc"
@@ -334,7 +333,7 @@ async def test_updateQuestion(db: Session, query: Query, login: Login, subtests)
         assert result.data is None
 
         # check the question was not updated
-        question = db.query(m.Question).filter(m.Question.id == 1).one()
+        question = db.execute(select(m.Question).where(m.Question.id == 1)).scalar_one()
         assert question.text == "Human (I am the owner)"
         assert question.survey.name == "Pets"
 
@@ -349,11 +348,11 @@ async def test_updateQuestion(db: Session, query: Query, login: Login, subtests)
         assert result.data["updateQuestion"]["id"] is not None
 
         # check the question was updated
-        question = (
-            db.query(m.Question)
-            .filter(m.Question.id == result.data["updateQuestion"]["id"])
-            .one()
-        )
+        question = db.execute(
+            select(m.Question).where(
+                m.Question.id == result.data["updateQuestion"]["id"]
+            )
+        ).scalar_one()
         assert question.text == "New Text"
         assert question.survey.name == "Pets"
 
@@ -390,8 +389,10 @@ async def test_saveResponse_bad_survey(
 @pytest.mark.asyncio
 async def test_saveResponse_update(db: Session, query: Query, login: Login, subtests):
     # check that alice already has a response for survey 1
-    alice = db.query(m.User).filter(m.User.username == "Alice").one()
-    response = db.query(m.Response).filter(m.Response.owner == alice).one()
+    alice = db.execute(select(m.User).where(m.User.username == "Alice")).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == alice)
+    ).scalar_one()
 
     # log in as alice
     await login("Alice")
@@ -401,11 +402,9 @@ async def test_saveResponse_update(db: Session, query: Query, login: Login, subt
     assert result.data["saveResponse"]["id"] == response.id
 
     # check the response was saved
-    response = (
-        db.query(m.Response)
-        .filter(m.Response.id == result.data["saveResponse"]["id"])
-        .one()
-    )
+    response = db.execute(
+        select(m.Response).where(m.Response.id == result.data["saveResponse"]["id"])
+    ).scalar_one()
     assert response.survey.name == "Pets"
     assert response.owner.username == "Alice"
     assert response.privacy == m.Privacy.PUBLIC
@@ -414,8 +413,12 @@ async def test_saveResponse_update(db: Session, query: Query, login: Login, subt
 @pytest.mark.asyncio
 async def test_saveResponse_create(db: Session, query: Query, login: Login, subtests):
     # check that frank has no response for survey 1
-    frank = db.query(m.User).filter(m.User.username == "Frank").one()
-    response = db.query(m.Response).filter(m.Response.owner == frank).first()
+    frank = db.execute(select(m.User).where(m.User.username == "Frank")).scalar_one()
+    response = (
+        db.execute(select(m.Response).where(m.Response.owner == frank))
+        .scalars()
+        .first()
+    )
     assert response is None
 
     # log in as frank
@@ -426,11 +429,9 @@ async def test_saveResponse_create(db: Session, query: Query, login: Login, subt
     assert result.data["saveResponse"]["id"] is not None
 
     # check the response was saved
-    response = (
-        db.query(m.Response)
-        .filter(m.Response.id == result.data["saveResponse"]["id"])
-        .one()
-    )
+    response = db.execute(
+        select(m.Response).where(m.Response.id == result.data["saveResponse"]["id"])
+    ).scalar_one()
     assert response.survey.name == "Pets"
     assert response.owner.username == "Frank"
     assert response.privacy == m.Privacy.PUBLIC
@@ -461,8 +462,12 @@ async def test_saveAnswer_bad_question(
 @pytest.mark.asyncio
 async def test_saveAnswer_create(db: Session, query: Query, login: Login, subtests):
     # check that frank has no response for survey 1
-    frank = db.query(m.User).filter(m.User.username == "Frank").one()
-    response = db.query(m.Response).filter(m.Response.owner == frank).first()
+    frank = db.execute(select(m.User).where(m.User.username == "Frank")).scalar_one()
+    response = (
+        db.execute(select(m.Response).where(m.Response.owner == frank))
+        .scalars()
+        .first()
+    )
     assert response is None
 
     # log in as frank
@@ -480,12 +485,11 @@ async def test_saveAnswer_create(db: Session, query: Query, login: Login, subtes
     assert result.data["saveAnswer"]["id"] is not None
 
     # check the answer was saved
-    answer = (
-        db.query(m.Answer)
-        .filter(m.Answer.response_id == response_id)
-        .filter(m.Answer.question_id == 1)
-        .one()
-    )
+    answer = db.execute(
+        select(m.Answer)
+        .where(m.Answer.response_id == response_id)
+        .where(m.Answer.question_id == 1)
+    ).scalar_one()
     assert answer.value == m.WWW.WILL
     assert answer.flip == m.WWW.WONT
 
@@ -493,8 +497,10 @@ async def test_saveAnswer_create(db: Session, query: Query, login: Login, subtes
 @pytest.mark.asyncio
 async def test_saveAnswer_update(db: Session, query: Query, login: Login, subtests):
     # check that alice already has a response for survey 1
-    alice = db.query(m.User).filter(m.User.username == "Alice").one()
-    response = db.query(m.Response).filter(m.Response.owner == alice).one()
+    alice = db.execute(select(m.User).where(m.User.username == "Alice")).scalar_one()
+    response = db.execute(
+        select(m.Response).where(m.Response.owner == alice)
+    ).scalar_one()
 
     # log in as alice
     await login("Alice")
@@ -506,12 +512,11 @@ async def test_saveAnswer_update(db: Session, query: Query, login: Login, subtes
     assert result.data["saveAnswer"]["id"] == 1
 
     # check the answer was saved
-    answer = (
-        db.query(m.Answer)
-        .filter(m.Answer.response_id == response.id)
-        .filter(m.Answer.question_id == 1)
-        .one()
-    )
+    answer = db.execute(
+        select(m.Answer)
+        .where(m.Answer.response_id == response.id)
+        .where(m.Answer.question_id == 1)
+    ).scalar_one()
     assert answer.value == m.WWW.WILL
 
 

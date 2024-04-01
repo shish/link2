@@ -5,7 +5,7 @@ import re
 from typing import TypedDict
 from flask.sessions import SessionMixin
 
-from sqlalchemy import select, func, and_, or_
+from sqlalchemy import select, delete, func, and_, or_
 from sqlalchemy.orm import Session
 import strawberry
 from strawberry_sqlalchemy_mapper import StrawberrySQLAlchemyMapper, StrawberrySQLAlchemyLoader  # type: ignore
@@ -215,11 +215,13 @@ class Response:
         db = info.context["db"]
         user = get_me_or_die(info, "Anonymous users can't view responses")
         my_response = (
-            db.query(m.Response)
-            .where(
-                m.Response.survey_id == self.survey.id,
-                m.Response.user_id == user.id,
+            db.execute(
+                select(m.Response).where(
+                    m.Response.survey_id == self.survey.id,
+                    m.Response.user_id == user.id,
+                )
             )
+            .scalars()
             .first()
         )
         if not my_response:
@@ -291,18 +293,22 @@ class Query:
     @strawberry.field(graphql_type=t.Sequence[Survey])
     def surveys(self, info: Info) -> t.Sequence[m.Survey]:
         db = info.context["db"]
-        return db.query(m.Survey).all()
+        return db.execute(select(m.Survey)).scalars().all()
 
     @strawberry.field(graphql_type=Survey)
     def survey(self, info: Info, survey_id: int) -> m.Survey:
         db = info.context["db"]
-        return db.query(m.Survey).where(m.Survey.id == survey_id).one()
+        return db.execute(select(m.Survey).where(m.Survey.id == survey_id)).scalar_one()
 
     @strawberry.field(graphql_type=Response)
     def response(self, info: Info, response_id: int) -> m.Response:
         user = get_me_or_die(info, "Anonymous users can't view responses")
         db = info.context["db"]
-        response = db.query(m.Response).where(m.Response.id == response_id).first()
+        response = (
+            db.execute(select(m.Response).where(m.Response.id == response_id))
+            .scalars()
+            .first()
+        )
         if response and (
             response.owner == user
             or response.privacy == m.Privacy.PUBLIC
@@ -422,18 +428,20 @@ class Mutation:
         friend = by_username(info, username)
         if not friend:
             raise Exception("User not found")
-        db.query(m.Friendship).filter(
-            or_(
-                and_(
-                    m.Friendship.friend_a_id == user.id,
-                    m.Friendship.friend_b_id == friend.id,
-                ),
-                and_(
-                    m.Friendship.friend_a_id == friend.id,
-                    m.Friendship.friend_b_id == user.id,
-                ),
+        db.execute(
+            delete(m.Friendship).where(
+                or_(
+                    and_(
+                        m.Friendship.friend_a_id == user.id,
+                        m.Friendship.friend_b_id == friend.id,
+                    ),
+                    and_(
+                        m.Friendship.friend_a_id == friend.id,
+                        m.Friendship.friend_b_id == user.id,
+                    ),
+                )
             )
-        ).delete()
+        )
         db.flush()
 
     ###################################################################
