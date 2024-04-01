@@ -9,8 +9,8 @@ from ..app import create_app
 def app():
     yield create_app(
         test_config={
-            "DATABASE_URL": "sqlite:///:memory:",
-            "DATABASE_ECHO": True,
+            "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
+            "SQLALCHEMY_DATABASE_ECHO": True,
         }
     )
 
