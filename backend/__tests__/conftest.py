@@ -11,15 +11,11 @@ from .. import models as m
 from .. import schema as s
 
 
-@pytest.fixture(autouse=True)
-def reset_secure() -> None:
-    m.SECURE = False
-
-
 @pytest.fixture
 def db() -> Session:
     engine = create_engine("sqlite://", echo=False)
     db = Session(engine)
+    m.SECURE = False
     m.Base.metadata.create_all(engine)
     m.populate_example_data(db)
     return db
