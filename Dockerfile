@@ -8,12 +8,11 @@ RUN npm run build
 
 
 FROM python:3.11-slim-buster
-#RUN apt update && apt install -y curl
-#HEALTHCHECK --interval=1m --timeout=3s CMD curl --fail http://127.0.0.1:8000/ || exit 1
 VOLUME /data
 EXPOSE 8000
 
 ENV PYTHONUNBUFFERED 1
+RUN apt update && apt install -y rsync && rm -rf /var/lib/apt/lists/*
 RUN /usr/local/bin/pip install --upgrade pip setuptools wheel
 COPY pyproject.toml /app/
 WORKDIR /app
