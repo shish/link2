@@ -86,4 +86,4 @@ jobs:
       - publish
     steps:
       - name: Deploy
-        run: curl 'https//du.shish.io/update?name=shish2k/link2&tag=latest'
+        run: curl 'https://du.shish.io/update?name=shish2k/link2&tag=latest'
