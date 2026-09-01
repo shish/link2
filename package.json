@@ -19,27 +19,27 @@
         "all": "concurrently npm:backend npm:start npm:test npm:codegen"
     },
     "dependencies": {
-        "@apollo/client": "^4.2.4",
+        "@apollo/client": "^4.2.12",
         "@fortawesome/free-solid-svg-icons": "^7.3.0",
         "@shish2k/react-faicon": "^0.1.0",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
-        "react-router-dom": "^7.18.1",
+        "react-router-dom": "^7.18.3",
         "react-tooltip": "^6.0.8",
         "usehooks-ts": "^3.1.1"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.5.1",
-        "@graphql-codegen/cli": "^7.1.3",
+        "@biomejs/biome": "^2.5.11",
+        "@graphql-codegen/cli": "^7.3.1",
         "@graphql-codegen/client-preset": "^6.0.0",
         "@types/react": "^19.2.17",
-        "@types/react-dom": "^19.2.3",
-        "@vitejs/plugin-react": "^6.0.3",
-        "concurrently": "^10.0.3",
-        "cypress": "^15.18.0",
-        "sass": "^1.101.0",
+        "@types/react-dom": "^19.2.5",
+        "@vitejs/plugin-react": "^6.1.1",
+        "concurrently": "^10.0.5",
+        "cypress": "^15.21.1",
+        "sass": "^1.103.1",
         "typescript": "^7.0",
-        "vite": "^8.1",
-        "vitest": "^4.1.9"
+        "vite": "^8.2",
+        "vitest": "^4.1.11"
     }
 }
